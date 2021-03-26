@@ -1,7 +1,7 @@
 class Automata:
     
     def __init__(self, alphabet, pattern):
-        self.numstates = len(pattern) + 1
+        self.numstates = len(pattern) + 1       
         self.alphabet = alphabet
         self.transitionTable = {}
         self.buildTransitionTable(pattern)        

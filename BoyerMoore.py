@@ -6,20 +6,20 @@ class BoyerMoore:
 		self.preprocess()
 
 	def preprocess(self):
-		self.process_bcr()
-		self.process_gsr()
+		self.process_bcr()        #bad character rule
+		self.process_gsr()        #good suffix rule
         
 	def process_bcr(self):
-		self.occ = {'A': 5, 'C': -1, 'T': 2, 'G': 1}
-		for c in self.alphabet: 
-			self.occ[c] = -1
-		for i in range(len(self.pattern)):
-			self.occ[self.pattern[i]] = i
+		self.occ = {'A': 5, 'C': -1, 'T': 2, 'G': 1}      #última posição das letras na sequencia (aqui só está a dar um exemplo porque poderia estar vazio)
+		for c in self.alphabet:       #para um valor no alfabeto
+			self.occ[c] = -1         #insere no dicionário com o valor -1
+		for i in range(len(self.pattern)):    #para um valor i de 0 até ao tamanho do meu padrão
+			self.occ[self.pattern[i]] = i     #se a letra existir no nosso padrão o valor -1 é alterado pela última posição da letra. se isto não acontecer mantém-se o -1 significando que não existe no padrão 
 
 	def process_gsr(self):
 		self.f = []
 		self.s = []
-		for i in range(len(self.pattern)+1):
+		for i in range(len(self.pattern)+1):      #para um valor i 
 			self.f.append(0)
 			self.s.append(0)
 
@@ -47,8 +47,8 @@ class BoyerMoore:
 	def search_pattern(self, text):
 		res = []
 		i = 0    # Posição da sequência
-		while i <= (len(text) - len(self.pattern)):
-			j = len(self.pattern)-1
+		while i <= (len(text) - len(self.pattern)):   #enquanto que a posição da sequencia é menor ou igual ao tamanho do texto - o tamanho do padrão
+			j = len(self.pattern)-1                  # a variável j é igual à posição do padrão na sequencia (tamanho do padrão -1)
 			while j >= 0 and self.pattern[j] == text[j+i]:
 				j -= 1
 			if j < 0:
@@ -67,4 +67,5 @@ def test():
 
 test()
 
-# result: [5, 13, 23, 37]
+result = [5, 13, 23, 37]
+print(len(result))
