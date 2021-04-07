@@ -296,8 +296,8 @@ def test4():
     print ("Score mult:" , mf.scoreMult(sol))
     print("Consensus:", mf.createMotifFromIndexes(sol).consensus())
     
-    sol2 = mf.gibbs(1000)
-    print ("Score:" , mf.score(sol2))
-    print ("Score mult:" , mf.scoreMult(sol2))
+    # sol2 = mf.gibbs(1000)
+    # print ("Score:" , mf.score(sol2))
+    # print ("Score mult:" , mf.scoreMult(sol2))
 
 test4()
