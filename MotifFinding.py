@@ -42,17 +42,34 @@ class MotifFinding:
         
     def score(self, s):
         score = 0
-        motif = self.createMotifFromIndexes(s)
-        motif.doCounts()
-        mat = motif.counts
-        for j in range(len(mat[0])):
+        motif = self.createMotifFromIndexes(s)  #vai à função creatMotifFromIndexes e coloca a sequencia na classe MyMotif
+        motif.doCounts()    #vai criar a matriz de contagens
+        mat = motif.counts    #vai buscar a matriz de contagens
+        for j in range(len(mat[0])):    #loop que verifica cada valor da primeira linha da matriz
             maxcol = mat[0][j]
-            for  i in range(1, len(mat)):
+            for  i in range(1, len(mat)):   #vai verificar seo valor presente em maxcol é maior a cada um dos valores da matriz. Se for, o maxcol adquire esse valor ao que depois se irá somar ao score
                 if mat[i][j] > maxcol: 
                     maxcol = mat[i][j]
             score += maxcol
         return score
-   
+    
+    def score_pseudo(self, s):      #score pseudo-código
+        score = 0
+        motif = self.createMotifFromIndexes(s)
+        motif.doCounts()
+        mat = motif.counts
+        for lin in range(len(mat)):     #transformação para pseudo-contagens onde acrescenta 1 valor a cada valor da matriz
+            for col in range(len(mat[0])):
+                mat = mat[lin][col]
+        
+        for j in range(len(mat[0])):
+            maxcol = mat[0][j]
+            for i in range(1, len(mat)):
+                if mat[i][j] > maxcol:
+                    maxcol = mat[i][j]
+            score += maxcol
+        return score
+    
     def scoreMult(self, s):
         score = 1.0
         motif = self.createMotifFromIndexes(s)
