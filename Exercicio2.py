@@ -10,6 +10,8 @@ class SuffixTreeMulti:
     def __init__(self):
         self.nodes = {0: (-1, {})}  # root node
         self.num = 0
+        self.seq1 = ''
+        self.seq2 = ''
 
     def print_tree(self):
         for k in self.nodes.keys():
@@ -21,23 +23,25 @@ class SuffixTreeMulti:
         print(self.nodes)
 
     def add_node(self, origin, symbol, leafnum=-1):
-        self.num += 1
-        self.nodes[origin][1][symbol] = self.num
-        self.nodes[self.num] = (leafnum, {})
+        self.num += 1   #vai dando valores aos nós
+        self.nodes[origin][1][symbol] = self.num   #acede ao dicionário do tuplo do nó e atribui um nucleótido ao nº do nó
+        self.nodes[self.num] = (leafnum, {})    #cria o tuplo donde se guardam as próximas posições
 
     def add_suffix(self, p, sufnum, seq):
         pos = 0
         node = 0
-        while pos < len(p):
-            if p[pos] not in self.nodes[node][1].keys():
+        while pos < len(p):    
+            if p[pos] not in self.nodes[node][1].keys():  
                 if pos == len(p) - 1:
                     self.add_node(node, p[pos], (sufnum, seq))
                 else:
                     self.add_node(node, p[pos])
             node = self.nodes[node][1][p[pos]]
-            pos += 1
+            pos += 1    
 
     def suffix_tree_from_seq(self, text, text1):
+        self.seq1 = text
+        self.seq2 = text1
         t = text + "$"
         t1 = text1 + '#'
         for seq in [t, t1]:
@@ -69,96 +73,157 @@ class SuffixTreeMulti:
         return res
 
     def nodes_below(self, node):
-        res = []
-        res.append(node)
-        if list(self.nodes[node][1].values()):
-            for m in res:
+        '''
+         Método que dado o identificador (número) de um nó na árvore de sufixos, retorna a
+         lista com todos os identificadores dos nós que estão abaixo de si na árvore
+
+        '''
+        res = []    #criei uma lista vazia
+        res.append(node)    #adicionei o local a partir donde vai começar a contar
+        if list(self.nodes[node][1].values()):  #se o node do dicionário tiver algum valor
+            for m in res:   #então por cada valor dentro da lista
+                #se tiver apenas 1 número como valor e esse valor for menor que 0 ou for um tuplo e o primeiro valor do tuplo for inferior a zero
+                #vai estender esse valor no interior da lista res para ir buscar todos os nós existentes abaixo do node
                 if type(self.nodes[node][0]) == int and self.nodes[node][0] < 0 or \
                         type(self.nodes[node][0]) == tuple and self.nodes[node][0][0] < 0:
                     res.extend(list(self.nodes[m][1].values()))
-        res.remove(node)
+        res.remove(node)    #Retiro o node para não contar, apenas conta o que vem asseguir
         lst = []
         for k in self.nodes.keys():
+            #para cada chave no dicionário nodes vou verificar
             if type(self.nodes[k][0]) == int and self.nodes[k][0] >= 0 or \
                     type(self.nodes[k][0]) == tuple and self.nodes[k][0][0] >= 0:
+                #se a chave do loop é um número ou um tuplo. E se for um número vemos se é >=0 ou se for um tuplo, se o primeiro número desse tuplo é >=0
+                #se isto acontecer acrescentamos à lista lst
                 lst.append(k)
             elif type(self.nodes[k][0]) == int and self.nodes[k][0] < 0 or \
                     type(self.nodes[k][0]) == tuple and self.nodes[k][0][0] < 0:
+                # fazemos o mesmo mas desta vez verificamos se esses valores são menores que zero. Se sim ...
                 if '$' in self.nodes[k][1]:
+                    #se $ estiver presente então acrescentamos o valor do $ à lista
                     lst.append(self.nodes[k][1]['$'])
                 if '$' in self.nodes[k][1] and len(self.nodes[k][1]) == 1 or '#' in self.nodes[k][1] and\
                         len(self.nodes[k][1]) == 1:
+                    #se o tamanho do dicionário for =1 e estiver presente como chave desse dicionário $ ou o #
+                    #acrescentamos ao dicionário
                     lst.append(k)
                 if '#' in self.nodes[k][1]:
+                    #se # estiver presente então acrescentamos o valor do # à lista
                     lst.append(self.nodes[k][1]['#'])
-        for r in lst:
+        for r in lst:   #para cada valor de lst
+        #se esse valor estiver em res vai remover as terminações ($ e #)
             if r in res:
                 res.remove(r)
         return sorted(res)
 
     def matches_prefix(self, prefix):
-        prefix_code = self.find_pattern(prefix)
+        '''
+        Método que permita, dada uma string (prefixo), verificar todos os padrões distintos que
+        iniciem por esse prefixo e que estejam contidos na sequência que deu origem à árvore.
+
+        '''
         res = []
         res1 = []
-        if not prefix_code:
+        a = 0
+        b = 0
+        if prefix not in self.seq1 and prefix not in self.seq2:
             return (0, res), (1, res1)
-        else:
-            for pos in prefix_code:
-                if pos[1] == 0:
-                    first = self.nodes_below(self.nodes[0][1][prefix[0]])
-                    if len(first) == len(prefix):
-                        res.append(prefix)
-                    else:
-                        res.append(prefix)
-                        string = prefix
-                        lst1 = []
-                        for s in first:
-                            ss = list(self.nodes[s][1].keys())
-                            if '$' in ss:
-                                ss.remove('$')
-                                if len(ss) == 0:
-                                    for i in lst1:
-                                        res.append(i)
-                                    break
-                                else:
-                                    string += ss[0]
-                                    res.append(string)
-                                    for i in lst1:
-                                        res.append(i)
-                                    lst1 = []
-                            elif "$" not in ss:
-                                string += ss[0]
-                                lst1.append(string)
 
-                elif pos[1] == 1:
-                    first = self.nodes_below(self.nodes[0][1][prefix[0]])
-                    if len(first) == len(prefix):
-                        res1.append(prefix)
+        elif prefix in self.seq1 and prefix not in self.seq2:
+            for p in range(len(self.seq1)):
+                if self.seq1[p] == prefix[0]:
+                    a = p
+                    for l in range(len(prefix)):
+                        if self.seq1[p + l] == prefix[l]:
+                            i = True
+                            pass
+                        else:
+                            i = False
+                            break
+                    if i == True:
+                        string = self.seq1[a + len(prefix):]
+                        res.append(self.seq1[a:])
+                        for f in range(len(string)):
+                            res.append(prefix + string[:f])
+                        return (0, sorted(list(set(res)))), (1, res1)
                     else:
-                        res1.append(prefix)
-                        string = prefix
-                        lst2 = []
-                        for s in first:
-                            ss = list(self.nodes[s][1].keys())
-                            if '#' in ss:
-                                ss.remove('#')
-                                if len(ss) == 0:
-                                    for i in lst2:
-                                        res1.append(i)
-                                    break
-                                else:
-                                    string += ss[0]
-                                    res1.append(string)
-                                    for i in lst2:
-                                        res1.append(i)
-                                    lst2 = []
-                            elif '#' not in ss:
-                                string += ss[0]
-                                lst2.append(string)
+                        return (0, res), (1, res1)
+
+        elif prefix not in self.seq1 and prefix in self.seq2:
+            for p in range(len(self.seq2)):
+                if self.seq2[p] == prefix[0]:
+                    b = p
+                    for l in range(len(prefix)):
+                        if self.seq2[p + l] == prefix[l]:
+                            i = True
+                            pass
+                        else:
+                            i = False
+                            break
+                    if i == True:
+                        string = self.seq2[b + len(prefix):]
+                        res1.append(self.seq2[b:])
+                        for f in range(len(string)):
+                            res1.append(prefix + string[:f])
+                        return (0, res), (1, sorted(list(set(res1))))
+                    else:
+                        return (0, res), (1, res1)
+
+        else:
+            for p in range(len(self.seq1)):
+                if self.seq1[p] == prefix[0]:
+                    a = p
+                    for l in range(len(prefix)):
+                        if self.seq1[p + l] == prefix[l]:
+                            i = True
+                            pass
+                        else:
+                            i = False
+                            break
+                    if i == True:
+                        string = self.seq1[a + len(prefix):]
+                        res.append(self.seq1[a:])
+                        for f in range(len(string)):
+                            res.append(prefix + string[:f])
+                if self.seq2[p] == prefix[0]:
+                    b = p
+                    for l in range(len(prefix)):
+                        if self.seq2[p + l] == prefix[l]:
+                            i = True
+                            pass
+                        else:
+                            i = False
+                            break
+                    if i == True:
+                        string = self.seq2[b + len(prefix):]
+                        res1.append(self.seq2[b:])
+                        for f in range(len(string)):
+                            res1.append(prefix + string[:f])
         return (0, sorted(list(set(res)))), (1, sorted(list(set(res1))))
 
     def largestCommonSubstring(self):
-        pass
+        '''
+        
+
+        '''
+        lst = []
+        string1 = self.seq1
+        string2 = self.seq2
+
+        for sub in range(len(string1)):
+            lst.append(string1[sub:])
+        lst = list(set(lst))
+        for p in lst:
+            if p not in string2:
+                print(p)
+                lst.remove(p)
+        if len(lst) == 0:
+            return None
+        elif len(lst) == 1:
+            return lst
+        else:
+            sorted(lst, key=len, reverse=True)
+            return lst[0]
 
 
 def test():
