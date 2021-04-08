@@ -126,30 +126,40 @@ class SuffixTreeMulti:
         res1 = []
         a = 0
         b = 0
-        if prefix not in self.seq1 and prefix not in self.seq2:
+        if prefix not in self.seq1 and prefix not in self.seq2:     
+        #primeiro procurar nas sequencias se existe existe o prefixo, se não existir obtemos um tuplo com lista vazia
             return (0, res), (1, res1)
 
         elif prefix in self.seq1 and prefix not in self.seq2:
+            #se o prefixo existir em seq1 e não existir na seq2
             for p in range(len(self.seq1)):
                 if self.seq1[p] == prefix[0]:
+                #fazemos um loop para procurar onde pode começar o prefixo na sequencia
                     a = p
                     for l in range(len(prefix)):
+                        
                         if self.seq1[p + l] == prefix[l]:
+                        #se a proxima letra na sequencia for igual à proxima letra do prefixo...
                             i = True
                             pass
                         else:
                             i = False
                             break
-                    if i == True:
+                    if i is True:
+                        #criamos uma string que retém toda a sequencia a partir do prefixo
                         string = self.seq1[a + len(prefix):]
+                        #coloca dentro do dicionário todas as letras a partir do prefixo a
                         res.append(self.seq1[a:])
                         for f in range(len(string)):
+                            #acrescenta ao dicionário o prefixo mais uma parte da string para termos todos
+                            #os padrões distintos que se iniciem com esse prefixo
                             res.append(prefix + string[:f])
                         return (0, sorted(list(set(res)))), (1, res1)
-                    else:
-                        return (0, res), (1, res1)
+                    
 
         elif prefix not in self.seq1 and prefix in self.seq2:
+            #exatamente o mesmo que a anterior
+            #se o prefixo não existir em seq1 e existir na seq2
             for p in range(len(self.seq2)):
                 if self.seq2[p] == prefix[0]:
                     b = p
@@ -160,16 +170,17 @@ class SuffixTreeMulti:
                         else:
                             i = False
                             break
-                    if i == True:
+                    if i is True:
                         string = self.seq2[b + len(prefix):]
                         res1.append(self.seq2[b:])
                         for f in range(len(string)):
                             res1.append(prefix + string[:f])
                         return (0, res), (1, sorted(list(set(res1))))
-                    else:
-                        return (0, res), (1, res1)
+                    
 
         else:
+            #se o prefixo existir em seq1 e em seq2
+            #voltamos a fazer o mesmo só que para cada uma
             for p in range(len(self.seq1)):
                 if self.seq1[p] == prefix[0]:
                     a = p
@@ -203,7 +214,7 @@ class SuffixTreeMulti:
 
     def largestCommonSubstring(self):
         '''
-        
+        Encontrar a maior substring comum a ambas as sequencias
 
         '''
         lst = []
@@ -211,17 +222,22 @@ class SuffixTreeMulti:
         string2 = self.seq2
 
         for sub in range(len(string1)):
+            #colocar em lst todas as substrings existentes na seq1
             lst.append(string1[sub:])
-        lst = list(set(lst))
+        lst = list(set(lst))    #remoção das substrings repetidas
         for p in lst:
             if p not in string2:
-                print(p)
+                #se alguma substring em seq1 não existir em seq 2, vamos remover porque não são concidentes
                 lst.remove(p)
         if len(lst) == 0:
+            #se a lista estiver vazia, então não existem substrings comuns
             return None
         elif len(lst) == 1:
+            #se só existir 1 substring comum esse será a nossa maior coincidente
             return lst
         else:
+            #se existir mais do que 1 substring comum então vamos organizar a lista por tamanho, de maior para menor
+            #e o resultado será a primeira substring da lista
             sorted(lst, key=len, reverse=True)
             return lst[0]
 
