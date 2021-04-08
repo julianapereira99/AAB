@@ -78,12 +78,12 @@ class SuffixTreeMulti:
          lista com todos os identificadores dos nós que estão abaixo de si na árvore
 
         '''
-        res = []    #criei uma lista vazia
+        res = []
         res.append(node)    #adicionei o local a partir donde vai começar a contar
         if list(self.nodes[node][1].values()):  #se o node do dicionário tiver algum valor
             for m in res:   #então por cada valor dentro da lista
-                #se tiver apenas 1 número como valor e esse valor for menor que 0 ou for um tuplo e o primeiro valor do tuplo for inferior a zero
-                #vai estender esse valor no interior da lista res para ir buscar todos os nós existentes abaixo do node
+                #se tiver apenas 1 número como valor e esse valor for menor que 0 ou for um tuplo e o primeiro valor do tuplo for 
+                #inferior a zero vai estender esse valor no interior da lista res para ir buscar todos os nós existentes abaixo do node
                 if type(self.nodes[node][0]) == int and self.nodes[node][0] < 0 or \
                         type(self.nodes[node][0]) == tuple and self.nodes[node][0][0] < 0:
                     res.extend(list(self.nodes[m][1].values()))
@@ -93,7 +93,8 @@ class SuffixTreeMulti:
             #para cada chave no dicionário nodes vou verificar
             if type(self.nodes[k][0]) == int and self.nodes[k][0] >= 0 or \
                     type(self.nodes[k][0]) == tuple and self.nodes[k][0][0] >= 0:
-                #se a chave do loop é um número ou um tuplo. E se for um número vemos se é >=0 ou se for um tuplo, se o primeiro número desse tuplo é >=0
+                #se a chave do loop é um número ou um tuplo. E se for um número vemos se é >=0 
+                #ou se for um tuplo, se o primeiro número desse tuplo é >=0
                 #se isto acontecer acrescentamos à lista lst
                 lst.append(k)
             elif type(self.nodes[k][0]) == int and self.nodes[k][0] < 0 or \
@@ -227,7 +228,7 @@ class SuffixTreeMulti:
         lst = list(set(lst))    #remoção das substrings repetidas
         for p in lst:
             if p not in string2:
-                #se alguma substring em seq1 não existir em seq 2, vamos remover porque não são concidentes
+            #se alguma substring em seq1 não existir em seq 2, vamos remover porque não são comuns
                 lst.remove(p)
         if len(lst) == 0:
             #se a lista estiver vazia, então não existem substrings comuns
