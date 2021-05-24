@@ -19,15 +19,15 @@ class SuffixTree:
                 print(k, ":", self.nodes[k][0])
 
     def add_node(self, origin, symbol, leafnum=-1):
-        self.num += 1
-        self.nodes[origin][1][symbol] = self.num
-        self.nodes[self.num] = (leafnum, {})
+        self.num += 1   #Incrementa o número ao nó
+        self.nodes[origin][1][symbol] = self.num   #Acede ao dicionário do tuplo do nó e atribui ao nucleótido o número do nó
+        self.nodes[self.num] = (leafnum, {})    #Cria o tuplo onde se guardam as próximas posições
 
     def add_suffix(self, p, sufnum):
         pos = 0
         node = 0
-        while pos < len(p):
-            if p[pos] not in self.nodes[node][1].keys():
+        while pos < len(p): #Enquanto que a posição for inferior ao tamanho do padrão
+            if p[pos] not in self.nodes[node][1].keys():    #se a letra na posição pos da sequencia p não estiver na chave do nó naquela posição
                 if pos == len(p) - 1:
                     self.add_node(node, p[pos], sufnum)
                 else:
